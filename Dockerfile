@@ -1,5 +1,4 @@
-# Imagen base: Python 3.13 en su versión "slim" (liviana, sin extras innecesarios)
-# Es como elegir un sistema operativo mínimo en lugar de uno con todo instalado
+# Imagen base: Python 3.13 en su versión "slim"
 FROM python:3.13-slim
 
 # Carpeta de trabajo dentro del contenedor. Todo lo que hagamos de aquí en
@@ -14,7 +13,7 @@ COPY requirements.txt .
 # Instalamos las dependencias dentro del contenedor
 RUN pip install --no-cache-dir -r requirements.txt
 
-# AHORA sí copiamos el resto del código (la carpeta app/)
+# copiamos el resto del código (la carpeta app/)
 COPY app/ ./app/
 
 # Documentamos que este contenedor escucha en el puerto 8000
