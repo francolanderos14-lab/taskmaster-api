@@ -1,0 +1,92 @@
+name: Deploy TaskMaster API
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  test:
+    name: Correr tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt
+
+      - name: Correr tests
+        run: pytest tests/ -v
+
+  build-and-push:
+    name: Build y push a ECR
+    runs-on: ubuntu-latest
+    needs: test
+
+    permissions:
+      id-token: write
+      contents: read
+
+    outputs:
+      image-tag: ${{ steps.build-image.outputs.image-tag }}
+
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v4
+
+      - name: Autenticarse en AWS via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - name: Login en ECR
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, tag y push de la imagen
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.ecr-login.outputs.registry }}
+          ECR_REPOSITORY: taskmaster-api
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          echo "image-tag=$IMAGE_TAG" >> "$GITHUB_OUTPUT"
+
+  deploy:
+    name: Deploy a ECS
+    runs-on: ubuntu-latest
+    needs: build-and-push
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Autenticarse en AWS via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - name: Forzar nuevo despliegue en ECS
+        run: |
+          aws ecs update-service \
+            --cluster taskmaster-cluster \
+            --service taskmaster-service \
+            --force-new-deployment
