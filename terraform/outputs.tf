@@ -17,3 +17,8 @@ output "alb_url" {
   description = "URL publica de la API"
   value       = "http://${aws_lb.main.dns_name}"
 }
+
+output "github_actions_role_arn" {
+  description = "ARN del rol IAM que GitHub Actions va a asumir"
+  value       = aws_iam_role.github_actions.arn
+}

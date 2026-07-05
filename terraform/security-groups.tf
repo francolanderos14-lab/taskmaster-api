@@ -49,3 +49,14 @@ resource "aws_security_group" "ecs" {
     Name = "${var.project_name}-ecs-sg"
   }
 }
+
+resource "aws_default_security_group" "default" {
+  vpc_id = aws_vpc.main.id
+
+  # Sin ingress ni egress definidos = bloquea todo el tráfico
+  # Esto asegura que si alguien asigna este SG por error, no habilite nada
+
+  tags = {
+    Name = "${var.project_name}-default-sg-restricted"
+  }
+}
