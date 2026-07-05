@@ -25,6 +25,13 @@ resource "aws_ecs_task_definition" "app" {
 
       readonlyRootFilesystem = true
 
+            secrets = [
+        {
+          name      = "TASKMASTER_API_KEY"
+          valueFrom = aws_secretsmanager_secret.api_key.arn
+        }
+      ]
+
       portMappings = [
         {
           containerPort = 8000

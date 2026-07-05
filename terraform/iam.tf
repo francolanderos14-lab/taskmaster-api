@@ -46,3 +46,37 @@ resource "aws_iam_role" "ecs_task" {
     Name = "${var.project_name}-ecs-task-role"
   }
 }
+
+resource "aws_iam_role_policy" "task_secrets_access" {
+  name = "${var.project_name}-secrets-access"
+  role = aws_iam_role.ecs_task.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid      = "ReadApiKeySecret"
+        Effect   = "Allow"
+        Action   = ["secretsmanager:GetSecretValue"]
+        Resource = aws_secretsmanager_secret.api_key.arn
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy" "execution_secrets_access" {
+  name = "${var.project_name}-execution-secrets-access"
+  role = aws_iam_role.ecs_execution.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid      = "ReadApiKeySecretForInjection"
+        Effect   = "Allow"
+        Action   = ["secretsmanager:GetSecretValue"]
+        Resource = aws_secretsmanager_secret.api_key.arn
+      }
+    ]
+  })
+}
