@@ -67,7 +67,7 @@ import time
 def stress_test():
     # Endpoint temporal solo para probar la alarma de CPU alta
     # Genera carga intensa de CPU durante unos segundos
-    end_time = time.time() + 90
+    end_time = time.time() + 150
     while time.time() < end_time:
         _ = [i ** 2 for i in range(10000)]
     return {"status": "stress test completado"}
