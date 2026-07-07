@@ -9,3 +9,8 @@ variable "project_name" {
   type        = string
   default     = "taskmaster"
 }
+
+variable "alert_email" {
+  description = "Correo donde se reciben las alertas de CloudWatch"
+  type        = string
+}

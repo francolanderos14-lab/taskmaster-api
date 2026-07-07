@@ -60,3 +60,14 @@ def delete_task(task_id: str):
         raise HTTPException(status_code=404, detail="Tarea no encontrada")
     del tasks[task_id]
     return {"message": "Tarea eliminada"}
+
+import time
+
+@app.get("/stress-test")
+def stress_test():
+    # Endpoint temporal solo para probar la alarma de CPU alta
+    # Genera carga intensa de CPU durante unos segundos
+    end_time = time.time() + 90
+    while time.time() < end_time:
+        _ = [i ** 2 for i in range(10000)]
+    return {"status": "stress test completado"}
