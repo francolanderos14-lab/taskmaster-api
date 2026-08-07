@@ -14,14 +14,14 @@ resource "aws_sns_topic_subscription" "email" {
 
 resource "aws_cloudwatch_metric_alarm" "cpu_high" {
   alarm_name          = "${var.project_name}-cpu-high"
-  alarm_description   = "CPU del contenedor por encima del 80% durante 2 periodos seguidos"
+  alarm_description   = "CPU del contenedor por encima del 40% durante 2 periodos seguidos"
   comparison_operator = "GreaterThanThreshold"
   evaluation_periods  = 2
   metric_name         = "CPUUtilization"
   namespace           = "AWS/ECS"
   period              = 60
   statistic           = "Average"
-  threshold           = 80
+  threshold           = 40
 
   dimensions = {
     ClusterName = aws_ecs_cluster.main.name
