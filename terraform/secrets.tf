@@ -7,6 +7,7 @@ resource "aws_secretsmanager_secret" "api_key" {
   name        = "${var.project_name}/api-key"
   description = "API Key interna de ejemplo para TaskMaster API"
   recovery_window_in_days = 0
+  kms_key_id               = aws_kms_key.logs.arn
   
   tags = {
     Name = "${var.project_name}-api-key"

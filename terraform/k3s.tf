@@ -79,9 +79,14 @@ resource "aws_instance" "k3s_node" {
 
   associate_public_ip_address = true
   monitoring = true
+  ebs_optimized = true
 
   root_block_device {
     encrypted = true
+  }
+
+  metadata_options {
+    http_tokens = "required"
   }
 
   user_data = <<-EOF
