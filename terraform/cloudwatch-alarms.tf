@@ -1,9 +1,9 @@
 resource "aws_sns_topic" "alerts" {
   name = "${var.project_name}-alerts"
+  kms_master_key_id = aws_kms_key.logs.arn
 
   tags = {
     Name = "${var.project_name}-alerts"
-    kms_master_key_id = aws_kms_key.logs.arn
   }
 }
 
@@ -193,10 +193,10 @@ resource "aws_cloudwatch_dashboard" "main" {
 resource "aws_cloudwatch_log_group" "vpc_flow_logs" {
   name              = "/vpc/${var.project_name}-flow-logs"
   retention_in_days = 7
+  kms_key_id = aws_kms_key.logs.arn
 
   tags = {
     Name = "${var.project_name}-flow-logs"
-    kms_key_id = aws_kms_key.logs.arn
   }
 }
 

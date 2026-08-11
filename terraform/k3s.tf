@@ -78,6 +78,11 @@ resource "aws_instance" "k3s_node" {
   iam_instance_profile   = aws_iam_instance_profile.k3s_instance_profile.name
 
   associate_public_ip_address = true
+  monitoring = true
+
+  root_block_device {
+    encrypted = true
+  }
 
   user_data = <<-EOF
     #!/bin/bash
