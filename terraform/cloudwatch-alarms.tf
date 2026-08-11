@@ -3,6 +3,7 @@ resource "aws_sns_topic" "alerts" {
 
   tags = {
     Name = "${var.project_name}-alerts"
+    kms_master_key_id = aws_kms_key.logs.arn
   }
 }
 
@@ -195,6 +196,7 @@ resource "aws_cloudwatch_log_group" "vpc_flow_logs" {
 
   tags = {
     Name = "${var.project_name}-flow-logs"
+    kms_key_id = aws_kms_key.logs.arn
   }
 }
 

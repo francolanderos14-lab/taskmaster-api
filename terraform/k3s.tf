@@ -20,6 +20,11 @@ resource "aws_iam_role_policy_attachment" "k3s_ssm_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
+resource "aws_iam_role_policy_attachment" "k3s_ecr_policy" {
+  role       = aws_iam_role.k3s_instance_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+}
+
 resource "aws_iam_instance_profile" "k3s_instance_profile" {
   name = "taskmaster-k3s-instance-profile"
   role = aws_iam_role.k3s_instance_role.name
@@ -31,6 +36,7 @@ resource "aws_security_group" "k3s_sg" {
   vpc_id      = aws_vpc.main.id
 
   egress {
+    description = "Allow all outbound traffic"
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
@@ -38,6 +44,7 @@ resource "aws_security_group" "k3s_sg" {
   }
 
   ingress {
+    description = "Kubernetes API access from within the VPC"
     from_port   = 6443
     to_port     = 6443
     protocol    = "tcp"
@@ -45,6 +52,7 @@ resource "aws_security_group" "k3s_sg" {
   }
 
   ingress {
+    description = "NodePort range for exposing services"
     from_port   = 30000
     to_port     = 32767
     protocol    = "tcp"
@@ -79,9 +87,4 @@ resource "aws_instance" "k3s_node" {
   tags = {
     Name = "taskmaster-k3s-node"
   }
-}
-
-resource "aws_iam_role_policy_attachment" "k3s_ecr_policy" {
-  role       = aws_iam_role.k3s_instance_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }
