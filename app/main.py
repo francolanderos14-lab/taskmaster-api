@@ -37,7 +37,7 @@ def get_task(task_id: str):
     return tasks[task_id]
 
 
-@app.post("/tasks", status_code=201)
+@app.post("/tasks", status_code=200)
 def create_task(task: Task):
     task_id = str(uuid.uuid4())  # genera un ID único, ej: "a3f8c2d1-..."
     task_data = {"id": task_id, **task.model_dump()}
