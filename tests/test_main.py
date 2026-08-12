@@ -56,3 +56,12 @@ def test_delete_task():
     assert delete_resp.status_code == 200
     get_resp = client.get(f"/tasks/{task_id}")
     assert get_resp.status_code == 404
+
+
+def test_list_completed_tasks():
+    task_id = client.post("/tasks", json={"title": "Tarea para completar"}).json()["id"]
+    client.put(f"/tasks/{task_id}", json={"title": "Tarea para completar", "completed": True})
+    response = client.get("/tasks/completed")
+    assert response.status_code == 200
+    completed_titles = [t["title"] for t in response.json()]
+    assert "Tarea para completar" in completed_titles
