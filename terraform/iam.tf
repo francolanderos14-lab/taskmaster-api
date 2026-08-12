@@ -80,3 +80,19 @@ resource "aws_iam_role_policy" "execution_secrets_access" {
     ]
   })
 }
+
+resource "aws_iam_role_policy" "ecs_execution_kms" {
+  name = "${var.project_name}-ecs-execution-kms"
+  role = aws_iam_role.ecs_execution.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = ["kms:Decrypt"]
+        Resource = aws_kms_key.logs.arn
+      }
+    ]
+  })
+}
