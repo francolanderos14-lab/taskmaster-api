@@ -16,7 +16,7 @@ seguridad integrada (DevSecOps), observabilidad, y un módulo comparativo de
 Kubernetes — con foco en el stack más solicitado en ofertas junior/semi-senior
 de DevOps y Cloud Engineering en Latinoamérica.
 
-<!-- CAPTURA: diagrama de arquitectura completo (draw.io) -->
+![Diagrama de arquitectura completo](docs/images/diagrama-arquitectura.png)
 
 ## Índice
 
@@ -70,7 +70,7 @@ subred pública y una privada:
   pública ni ruta directa a internet — su única salida es a través del NAT
   Gateway, y su único tráfico entrante permitido es el que llega desde el ALB.
 
-<!-- CAPTURA: mapa de recursos de la VPC (subredes en 2 AZ) -->
+![Mapa de recursos de la VPC con subredes distribuidas en 2 zonas de disponibilidad](docs/images/vpc-subnets.png)
 
 ### Balanceo y cómputo
 
@@ -84,7 +84,7 @@ El ALB también cuenta con **access logging** habilitado, guardando cada
 petición recibida en un bucket S3 dedicado — útil para auditoría y
 troubleshooting posterior.
 
-<!-- CAPTURA: Swagger UI de la API funcionando vía el ALB -->
+![Swagger UI de la API funcionando vía el ALB](docs/images/swagger-api.png)
 
 ### Auto Scaling
 
@@ -94,8 +94,9 @@ pico de tráfico o carga, el sistema agrega tasks de forma automática sin
 intervención manual — y las retira cuando la demanda baja, optimizando
 costos.
 
-<!-- CAPTURA: ECS Tasks escalando a 3 deseadas (stress test) -->
-<!-- CAPTURA: ECS Tasks de vuelta a 1 deseada (scale-in) -->
+![ECS escalando a más tasks deseadas durante el stress test](docs/images/ecs-asg1.png)
+
+![ECS de vuelta a 1 task deseada tras el scale-in](docs/images/ecs-asg2.png)
 
 ### WAF
 
@@ -105,7 +106,7 @@ Usa 2 conjuntos de reglas administradas por AWS: protecciones genéricas
 contra ataques web comunes (OWASP Top 10, como XSS o payloads anómalos) y
 detección de patrones de entrada maliciosos conocidos.
 
-<!-- CAPTURA: WAF asociado al ALB en la consola -->
+![WAF asociado al ALB en la consola](docs/images/waf-alb.png)
 
 ### Secretos y registro de imágenes
 
@@ -310,7 +311,7 @@ para monitoreo en vivo.
 Las 4 alarmas notifican por email a través de un tópico de **SNS**, cifrado
 con KMS.
 
-<!-- CAPTURA: alarma cpu-high en estado "En modo alarma" -->
+![Alarmas de CPU en modo alarma durante el stress test](docs/images/cpu-alarm.png)
 
 **Decisión consciente sobre el umbral de CPU:** la alarma `cpu-high` está
 configurada al 40%, no al 80% que sería más habitual en producción real. Se
@@ -329,7 +330,7 @@ Un dashboard de CloudWatch con 4 widgets:
 3. Salud del Target Group
 4. Tiempo de respuesta del ALB
 
-<!-- CAPTURA: dashboard con tráfico real y pico de CPU del stress test -->
+![Dashboard de CloudWatch mostrando el pico de CPU y tráfico durante el stress test](docs/images/dashboard-traffic.png)
 
 ### VPC Flow Logs y Container Insights
 
@@ -382,7 +383,7 @@ tipo `docker-registry`, generado con un token temporal de ECR (válido por
 12 horas). Es una de las diferencias operativas más notorias entre ambos
 modelos.
 
-<!-- CAPTURA: Pods corriendo (kubectl get pods) + respuesta de /health -->
+![Pods de la API corriendo en k3s y respuesta exitosa de /health](docs/images/k3s-pods-health.png)
 
 ### Comparación con ECS Fargate
 
@@ -425,13 +426,16 @@ producción.
    el pipeline antes de llegar a `build-and-push` y `deploy` — ningún
    recurso de AWS se vio afectado.
 
-<!-- CAPTURA: job de test fallando con el AssertionError -->
-<!-- CAPTURA: diagrama del pipeline con test en rojo y jobs posteriores sin ejecutar -->
+![Job de test fallando con AssertionError: assert 200 == 201](docs/images/demo1-test-failed.png)
+
+![Pipeline detenido: test en rojo, build y deploy sin ejecutar](docs/images/demo1-pipeline-blocked.png)
 
 4. Se revirtió el error, y se confirmó que el pipeline corre de punta a
    punta normalmente.
 
-<!-- CAPTURA: pipeline completo en verde tras el fix -->
+![Test pasando de nuevo tras revertir el bug](docs/images/demo1-test-green.png)
+
+![Pipeline completo en verde tras el fix](docs/images/demo1-pipeline-green.png)
 
 ### Demo 2 — Nueva funcionalidad desplegada end-to-end
 
@@ -447,7 +451,7 @@ código hasta producción, sin intervención manual.
 5. Se verificó la funcionalidad nueva funcionando en producción, visible
    y documentada automáticamente en el Swagger UI a través del ALB.
 
-<!-- CAPTURA: endpoint /tasks/completed visible en el Swagger UI vía ALB -->
+![Endpoint GET /tasks/completed documentado y funcionando en el Swagger UI vía ALB](docs/images/demo2-swagger-completed.png)
 
 ---
 
